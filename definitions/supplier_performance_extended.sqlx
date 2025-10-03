@@ -1,0 +1,20 @@
+config {
+  type: "table",
+  schema: "dataset102"
+}
+
+select
+  s.supplier_id,
+  s.supplier_name,
+  count(distinct pr.product_id) as total_products,
+  sum(oi.quantity) as total_units_sold,
+  sum(oi.quantity * pr.price) as total_revenue,
+  avg(rv.rating) as avg_product_rating,
+  count(distinct sh.shipment_id) as shipments_handled
+from ${ref("suppliers")} s
+join ${ref("products")} pr on s.supplier_id = pr.supplier_id
+left join ${ref("order_items")} oi on pr.product_id = oi.product_id
+left join ${ref("orders")} o on oi.order_id = o.order_id
+left join ${ref("shipments")} sh on o.order_id = sh.order_id
+left join ${ref("reviews")} rv on pr.product_id = rv.product_id
+group by s.supplier_id, s.supplier_name

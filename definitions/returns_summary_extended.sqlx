@@ -1,0 +1,22 @@
+config {
+  type: "table",
+  schema: "dataset102"
+}
+
+select
+  r.return_id,
+  r.order_id,
+  c.customer_name,
+  pr.product_name,
+  cat.category_name,
+  rs.region_name,
+  r.reason,
+  r.return_date
+from ${ref("returns")} r
+join ${ref("orders")} o on r.order_id = o.order_id
+join ${ref("customers")} c on o.customer_id = c.customer_id
+join ${ref("customer_regions")} cr on c.customer_id = cr.customer_id
+join ${ref("regions")} rs on cr.region_id = rs.region_id
+join ${ref("order_items")} oi on o.order_id = oi.order_id
+join ${ref("products")} pr on oi.product_id = pr.product_id
+join ${ref("categories")} cat on pr.category_id = cat.category_id

@@ -1,0 +1,25 @@
+config {
+  type: "table",
+  schema: "dataset102"
+}
+
+select
+  sh.shipment_id,
+  o.order_id,
+  c.customer_name,
+  r.region_name,
+  pr.product_name,
+  s.supplier_name,
+  sh.carrier,
+  sh.shipment_date,
+  sh.status,
+  p.payment_method
+from ${ref("shipments")} sh
+join ${ref("orders")} o on sh.order_id = o.order_id
+join ${ref("customers")} c on o.customer_id = c.customer_id
+join ${ref("customer_regions")} cr on c.customer_id = cr.customer_id
+join ${ref("regions")} r on cr.region_id = r.region_id
+join ${ref("order_items")} oi on o.order_id = oi.order_id
+join ${ref("products")} pr on oi.product_id = pr.product_id
+join ${ref("suppliers")} s on pr.supplier_id = s.supplier_id
+left join ${ref("payments")} p on o.order_id = p.order_id

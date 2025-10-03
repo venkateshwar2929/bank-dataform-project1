@@ -1,0 +1,26 @@
+config {
+  type: "table",
+  schema: "dataset102"
+}
+
+select
+  pr.product_id,
+  pr.product_name,
+  cat.category_name,
+  s.supplier_name,
+  cast(i.stock_quantity as int64) as stock_quantity,
+  coalesce(sum(oi.quantity), 0) as total_sold,
+  (cast(i.stock_quantity as int64) - coalesce(sum(oi.quantity), 0)) as available_balance,
+  i.warehouse_location
+from ${ref("inventory")} i
+join ${ref("products")} pr on i.product_id = pr.product_id
+join ${ref("categories")} cat on pr.category_id = cat.category_id
+join ${ref("suppliers")} s on pr.supplier_id = s.supplier_id
+left join ${ref("order_items")} oi on pr.product_id = oi.product_id
+group by
+  pr.product_id,
+  pr.product_name,
+  cat.category_name,
+  s.supplier_name,
+  i.stock_quantity,
+  i.warehouse_location
